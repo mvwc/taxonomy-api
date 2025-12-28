@@ -1,0 +1,102 @@
+
+    /* Override Kadence buttons for our chips */
+    .taxa-explorer button.taxa-chip {
+        border-radius: 999px !important;
+        padding: 0.25rem 0.75rem !important;
+        border: 1px solid #1f2937 !important;
+        background: #020617 !important;
+        color: #e5e7eb !important;
+        font-size: 12px !important;
+        cursor: pointer;
+        white-space: nowrap;
+        box-shadow: none !important;
+    }
+    .taxa-explorer button.taxa-chip:hover {
+        background: #111827 !important;
+        border-color: #fff !important;
+    }
+    /* Non-color chips: purple when active */
+    .taxa-explorer button.taxa-chip.is-active:not(.taxa-chip--color) {
+        background: #4f46e5 !important;
+        border-color: #6366f1 !important;
+        color: #f9fafb !important;
+        box-shadow: 0 0 0 1px rgba(129,140,248,0.4) !important;
+    }
+
+
+    /* Color chips */
+    .taxa-explorer__chips--colors {
+        gap: 0.5rem;
+    }
+    .taxa-explorer button.taxa-chip--color {
+        width: 26px !important;
+        height: 26px !important;
+        padding: 0 !important;
+        border-radius: 999px !important;
+        border-width: 2px !important;
+        border-style: solid !important;
+        border-color: transparent !important;
+        background-clip: padding-box;
+    }
+    .taxa-explorer button.taxa-chip--color.is-active {
+        border-color: #f9fafb !important;
+        box-shadow: 0 0 0 2px rgba(15,23,42,0.8) !important;
+        transform: translateY(-1px);
+    }
+
+
+
+.taxa-explorer button.taxa-chip--red { background:#FF2C2C !important; }
+.taxa-explorer button.taxa-chip--red:hover { background:#dc2626 !important; }
+.taxa-explorer button.taxa-chip--orange { background:#ea580c !important; }
+.taxa-explorer button.taxa-chip--orange:hover { background:#DB9D00 !important; }
+.taxa-explorer button.taxa-chip--yellow { background:#eab308 !important; }
+.taxa-explorer button.taxa-chip--yellow:hover { background:#FFDE21 !important; }
+.taxa-explorer button.taxa-chip--green { background:#16a34a !important; }
+.taxa-explorer button.taxa-chip--green:hover { background:#008000 !important; }
+.taxa-explorer button.taxa-chip--olive { background:#808000 !important; }
+.taxa-explorer button.taxa-chip--olive:hover { background:#636B2F !important; }
+.taxa-explorer button.taxa-chip--blue { background:#2563eb !important; }
+.taxa-explorer button.taxa-chip--blue:hover { background:#0000FF !important; }
+.taxa-explorer button.taxa-chip--purple { background:#7c3aed !important; }
+.taxa-explorer button.taxa-chip--purple:hover { background:#9D00FF !important; }
+.taxa-explorer button.taxa-chip--white { background:#fff !important; }
+.taxa-explorer button.taxa-chip--white:hover { background:#D4D4D4 !important; }
+.taxa-explorer button.taxa-chip--gray { background:#6b7280 !important; }
+.taxa-explorer button.taxa-chip--gray:hover { background:#898989 !important; }
+.taxa-explorer button.taxa-chip--tan { background:#D6B588 !important; }
+.taxa-explorer button.taxa-chip--tan:hover { background:#E8D5BC !important; }
+.taxa-explorer button.taxa-chip--brown { background:#92400e !important; }
+.taxa-explorer button.taxa-chip--brown:hover { background:#92400e !important; }
+.taxa-explorer button.taxa-chip--pink { background:#FC8EAC !important; }
+.taxa-explorer button.taxa-chip--pink:hover { background:#FF8DA1 !important; }
+.taxa-explorer button.taxa-chip--black { background:#020617 !important; }
+.taxa-explorer button.taxa-chip--black:hover { background:#000401 !important; }
+.taxa-explorer button.taxa-chip--teal { background:#069494 !important; }
+.taxa-explorer button.taxa-chip--teal:hover { background:#13D4D4 !important; }
+.taxa-explorer button.taxa-chip--cyan { background:#00FFFF !important; }
+.taxa-explorer button.taxa-chip--cyan:hover { background:#23D5D5 !important; }
+.taxa-explorer button.taxa-chip--navy { background:#000080 !important; }
+.taxa-explorer button.taxa-chip--navy:hover { background:#4747D4 !important; }
+.taxa-explorer button.taxa-chip--gold { background:#EFBF04 !important; }
+.taxa-explorer button.taxa-chip--gold:hover { background:#C2B067 !important; }
+.taxa-explorer button.taxa-chip--rust { background:#B7410E !important; }
+.taxa-explorer button.taxa-chip--rust:hover { background:#993809 !important; }
+
+
+.taxa-explorer button.taxa-chip--iridescent{
+  background: var(--taxa-iridescent-gif) center/cover no-repeat !important;
+}
+.taxa-explorer button.taxa-chip--iridescent:hover{
+  background: var(--taxa-iridescent-gif) center/cover no-repeat !important;
+    border-color: #fff !important;
+}
+
+.taxa-explorer button.taxa-chip--patterned{
+  background: var(--taxa-patterned-gif) center/cover no-repeat !important;
+}
+.taxa-explorer button.taxa-chip--patterned:hover{
+  background: var(--taxa-patterned-gif) center/cover no-repeat !important;
+    border-color: #fff !important;
+}
+
