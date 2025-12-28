@@ -29,14 +29,6 @@ function cnbSetupMenu() {
     );
     add_submenu_page(
         'taxa-nav',
-        'Update Taxa',
-        'Update Taxa',
-        'manage_options',
-        'updatetaxa',
-        'updateTaxa'
-    );
-    add_submenu_page(
-        'taxa-nav',
         'Update Children',
         'Update Children',
         'manage_options',
@@ -51,14 +43,6 @@ function cnbSetupMenu() {
         'taxa_settings',
         'taxaSettingsPage'
     );
-    add_submenu_page(
-        'taxa-nav',
-        'Update Rank Math Keyword',
-        'Update Rank Math Keyword',
-        'manage_options',
-        'updateKeywords',
-        'setRankMathKeyword'
-    );
 }
 add_action( 'admin_menu', 'cnbSetupMenu' );
 
@@ -69,10 +53,8 @@ function taxaRender() { ?>
 
         <ul>
             <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=taxa' ) ); ?>">Initialize / Import Root Taxa</a></li>
-            <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=updatetaxa' ) ); ?>">Update Taxa Meta</a></li>
             <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=updatechildren' ) ); ?>">Update Children Meta</a></li>
             <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=taxa_settings' ) ); ?>">Settings</a></li>
-            <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=updateKeywords' ) ); ?>">Update Rank Math Keyword</a></li>
         </ul>
     </div>
 <?php
