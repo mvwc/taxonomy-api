@@ -77,10 +77,12 @@ function taxaSettingsPage() {
         $site_focus_keyword      = isset( $_POST['site_focus_keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['site_focus_keyword'] ) ) : '';
         $site_focus_keyword_slug = isset( $_POST['site_focus_keyword_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['site_focus_keyword_slug'] ) ) : '';
         $primary_taxa_id         = isset( $_POST['primary_taxa_id'] ) ? sanitize_text_field( wp_unslash( $_POST['primary_taxa_id'] ) ) : '';
+        $taxa_update_metadata_url = isset( $_POST['taxa_update_metadata_url'] ) ? esc_url_raw( wp_unslash( $_POST['taxa_update_metadata_url'] ) ) : '';
 
         update_option( 'site_focus_keyword', $site_focus_keyword );
         update_option( 'site_focus_keyword_slug', $site_focus_keyword_slug );
         update_option( 'primary_taxa_id', $primary_taxa_id );
+        update_option( 'taxa_update_metadata_url', $taxa_update_metadata_url );
 
         // Cron / import options.
         $taxa_cron_frequency = isset( $_POST['taxa_cron_frequency'] ) ? sanitize_text_field( wp_unslash( $_POST['taxa_cron_frequency'] ) ) : 'manual';
@@ -155,6 +157,7 @@ function taxaSettingsPage() {
     $site_focus_keyword      = get_option( 'site_focus_keyword', '' );
     $site_focus_keyword_slug = get_option( 'site_focus_keyword_slug', '' );
     $primary_taxa_id         = get_option( 'primary_taxa_id', '' );
+    $taxa_update_metadata_url = get_option( 'taxa_update_metadata_url', '' );
 
     $taxa_cron_frequency = get_option( 'taxa_cron_frequency', 'manual' );
     $taxa_cron_batch_size = absint( get_option( 'taxa_cron_batch_size', 10 ) );
@@ -212,6 +215,13 @@ function taxaSettingsPage() {
                         <td>
                             <input type="text" id="primary_taxa_id" name="primary_taxa_id" value="<?php echo esc_attr( $primary_taxa_id ); ?>" class="regular-text" />
                             <p class="description">Root iNaturalist taxa ID (e.g. <code>1466321</code>). This will be the starting point for ingestion.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><label for="taxa_update_metadata_url">Plugin Update Metadata URL</label></th>
+                        <td>
+                            <input type="url" id="taxa_update_metadata_url" name="taxa_update_metadata_url" value="<?php echo esc_attr( $taxa_update_metadata_url ); ?>" class="regular-text" />
+                            <p class="description">URL to a JSON update manifest used for in-dashboard plugin updates.</p>
                         </td>
                     </tr>
                 </table>

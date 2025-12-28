@@ -29,6 +29,14 @@ require_once TAXA_API_PLUGIN_DIR . 'includes/facets-admin.php';
 
 
 require_once TAXA_API_PLUGIN_DIR . 'includes/install.php';
+require_once TAXA_API_PLUGIN_DIR . 'includes/update-checker.php';
+
+$taxa_update_metadata_url = get_option( 'taxa_update_metadata_url', '' );
+$taxa_update_metadata_url = apply_filters( 'taxa_api_update_metadata_url', $taxa_update_metadata_url );
+if ( $taxa_update_metadata_url ) {
+    $taxa_update_checker = new Taxa_Plugin_Update_Checker( __FILE__, $taxa_update_metadata_url );
+    $taxa_update_checker->register();
+}
 
 register_activation_hook( __FILE__, 'taxonomy_api_activate' );
 
