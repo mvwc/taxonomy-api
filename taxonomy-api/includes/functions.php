@@ -131,24 +131,6 @@ function updateChildren() {
 }
 
 /**
- * Legacy "Update Taxa" page.
- * For now, just explains that behavior is handled by importer.
- * Callback for ?page=updatetaxa
- */
-function updateTaxa() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-        return;
-    }
-
-    echo '<div class="wrap"><h1>Update Taxa Meta</h1>';
-    echo '<p>In v2.x, taxa creation and updates are handled automatically by the importer when new taxa are ingested.</p>';
-    echo '<p>Use <strong>Import Taxa API</strong> to initialize the root taxa and <strong>Update Children</strong> to process pending child taxa.</p>';
-    echo '</div>';
-}
-
-
-
-/**
  * --- GPT / AI UTILITIES ---
  */
 
@@ -399,46 +381,6 @@ function set_rank_math_focus_keyword( $post_id ) {
     }
     update_post_meta( $post_id, 'rank_math_focus_keyword', $post_title );
 }
-
-/**
- * Admin page: Update Rank Math keywords on all taxa posts.
- * Callback for ?page=updateKeywords
- */
-function setRankMathKeyword() {
-    if ( ! current_user_can( 'manage_options' ) ) {
-        return;
-    }
-
-    echo '<div class="wrap"><h1>Update Rank Math Focus Keywords</h1>';
-
-    $args  = array(
-        'post_type'      => 'post',
-        'post_status'    => 'publish',
-        'posts_per_page' => -1,
-        'meta_query'     => array(
-            array(
-                'key'     => 'taxa',
-                'compare' => 'EXISTS',
-            ),
-        ),
-    );
-    $query = new WP_Query( $args );
-    $count = 0;
-
-    if ( $query->have_posts() ) {
-        while ( $query->have_posts() ) {
-            $query->the_post();
-            $post_id = get_the_ID();
-            set_rank_math_focus_keyword( $post_id );
-            $count++;
-        }
-        wp_reset_postdata();
-    }
-
-    echo '<p>Updated Rank Math focus keyword for <strong>' . intval( $count ) . '</strong> taxa posts.</p>';
-    echo '</div>';
-}
-
 
 /**
  * --- META / TAXONOMY HELPERS ---
@@ -1718,4 +1660,3 @@ function taxa_facets_lazy_build_for_viewed_post() {
     // error_log( '[FACETS][LAZY] GPT+facets built for post ' . $post->ID );
 }
 add_action( 'wp', 'taxa_facets_lazy_build_for_viewed_post' );
-
