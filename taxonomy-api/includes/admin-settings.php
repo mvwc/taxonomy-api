@@ -29,14 +29,6 @@ function cnbSetupMenu() {
     );
     add_submenu_page(
         'taxa-nav',
-        'Update Taxa',
-        'Update Taxa',
-        'manage_options',
-        'updatetaxa',
-        'updateTaxa'
-    );
-    add_submenu_page(
-        'taxa-nav',
         'Update Children',
         'Update Children',
         'manage_options',
@@ -51,14 +43,6 @@ function cnbSetupMenu() {
         'taxa_settings',
         'taxaSettingsPage'
     );
-    add_submenu_page(
-        'taxa-nav',
-        'Update Rank Math Keyword',
-        'Update Rank Math Keyword',
-        'manage_options',
-        'updateKeywords',
-        'setRankMathKeyword'
-    );
 }
 add_action( 'admin_menu', 'cnbSetupMenu' );
 
@@ -69,10 +53,8 @@ function taxaRender() { ?>
 
         <ul>
             <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=taxa' ) ); ?>">Initialize / Import Root Taxa</a></li>
-            <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=updatetaxa' ) ); ?>">Update Taxa Meta</a></li>
             <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=updatechildren' ) ); ?>">Update Children Meta</a></li>
             <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=taxa_settings' ) ); ?>">Settings</a></li>
-            <li><a href="<?php echo esc_url( admin_url( 'admin.php?page=updateKeywords' ) ); ?>">Update Rank Math Keyword</a></li>
         </ul>
     </div>
 <?php
@@ -95,10 +77,14 @@ function taxaSettingsPage() {
         $site_focus_keyword      = isset( $_POST['site_focus_keyword'] ) ? sanitize_text_field( wp_unslash( $_POST['site_focus_keyword'] ) ) : '';
         $site_focus_keyword_slug = isset( $_POST['site_focus_keyword_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['site_focus_keyword_slug'] ) ) : '';
         $primary_taxa_id         = isset( $_POST['primary_taxa_id'] ) ? sanitize_text_field( wp_unslash( $_POST['primary_taxa_id'] ) ) : '';
+        $taxa_update_metadata_url = isset( $_POST['taxa_update_metadata_url'] ) ? esc_url_raw( wp_unslash( $_POST['taxa_update_metadata_url'] ) ) : '';
+        $taxa_update_github_token = isset( $_POST['taxa_update_github_token'] ) ? sanitize_text_field( wp_unslash( $_POST['taxa_update_github_token'] ) ) : '';
 
         update_option( 'site_focus_keyword', $site_focus_keyword );
         update_option( 'site_focus_keyword_slug', $site_focus_keyword_slug );
         update_option( 'primary_taxa_id', $primary_taxa_id );
+        update_option( 'taxa_update_metadata_url', $taxa_update_metadata_url );
+        update_option( 'taxa_update_github_token', $taxa_update_github_token );
 
         // Cron / import options.
         $taxa_cron_frequency = isset( $_POST['taxa_cron_frequency'] ) ? sanitize_text_field( wp_unslash( $_POST['taxa_cron_frequency'] ) ) : 'manual';
@@ -173,6 +159,8 @@ function taxaSettingsPage() {
     $site_focus_keyword      = get_option( 'site_focus_keyword', '' );
     $site_focus_keyword_slug = get_option( 'site_focus_keyword_slug', '' );
     $primary_taxa_id         = get_option( 'primary_taxa_id', '' );
+    $taxa_update_metadata_url = get_option( 'taxa_update_metadata_url', '' );
+    $taxa_update_github_token = get_option( 'taxa_update_github_token', '' );
 
     $taxa_cron_frequency = get_option( 'taxa_cron_frequency', 'manual' );
     $taxa_cron_batch_size = absint( get_option( 'taxa_cron_batch_size', 10 ) );
@@ -230,6 +218,20 @@ function taxaSettingsPage() {
                         <td>
                             <input type="text" id="primary_taxa_id" name="primary_taxa_id" value="<?php echo esc_attr( $primary_taxa_id ); ?>" class="regular-text" />
                             <p class="description">Root iNaturalist taxa ID (e.g. <code>1466321</code>). This will be the starting point for ingestion.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><label for="taxa_update_metadata_url">Plugin Update Metadata URL</label></th>
+                        <td>
+                            <input type="url" id="taxa_update_metadata_url" name="taxa_update_metadata_url" value="<?php echo esc_attr( $taxa_update_metadata_url ); ?>" class="regular-text" />
+                            <p class="description">URL to a JSON update manifest used for in-dashboard plugin updates.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><label for="taxa_update_github_token">GitHub Release Token</label></th>
+                        <td>
+                            <input type="password" id="taxa_update_github_token" name="taxa_update_github_token" value="<?php echo esc_attr( $taxa_update_github_token ); ?>" class="regular-text" autocomplete="off" />
+                            <p class="description">Personal access token used to authenticate GitHub release downloads (optional).</p>
                         </td>
                     </tr>
                 </table>
