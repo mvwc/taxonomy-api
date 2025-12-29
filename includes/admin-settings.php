@@ -46,6 +46,73 @@ function cnbSetupMenu() {
 }
 add_action( 'admin_menu', 'cnbSetupMenu' );
 
+function taxa_register_network_settings_page() {
+    if ( ! is_multisite() ) {
+        return;
+    }
+
+    add_submenu_page(
+        'settings.php',
+        'Taxonomy API Updates',
+        'Taxonomy API Updates',
+        'manage_network_options',
+        'taxa_network_settings',
+        'taxaNetworkSettingsPage'
+    );
+}
+add_action( 'network_admin_menu', 'taxa_register_network_settings_page' );
+
+function taxaNetworkSettingsPage() {
+    if ( ! current_user_can( 'manage_network_options' ) ) {
+        return;
+    }
+
+    if ( isset( $_POST['save_taxa_network_settings'] ) ) {
+        check_admin_referer( 'taxa_network_settings_save', 'taxa_network_settings_nonce' );
+
+        $taxa_update_metadata_url = isset( $_POST['taxa_update_metadata_url'] )
+            ? esc_url_raw( wp_unslash( $_POST['taxa_update_metadata_url'] ) )
+            : '';
+        $taxa_update_github_token = isset( $_POST['taxa_update_github_token'] )
+            ? sanitize_text_field( wp_unslash( $_POST['taxa_update_github_token'] ) )
+            : '';
+
+        update_site_option( 'taxa_update_metadata_url', $taxa_update_metadata_url );
+        update_site_option( 'taxa_update_github_token', $taxa_update_github_token );
+
+        echo '<div class="notice notice-success is-dismissible"><p>Network settings saved.</p></div>';
+    }
+
+    $taxa_update_metadata_url = get_site_option( 'taxa_update_metadata_url', '' );
+    $taxa_update_github_token = get_site_option( 'taxa_update_github_token', '' );
+    ?>
+    <div class="wrap">
+        <h1>Taxonomy API Update Settings</h1>
+        <p>Configure plugin update settings for the entire network.</p>
+        <form method="post" action="">
+            <?php wp_nonce_field( 'taxa_network_settings_save', 'taxa_network_settings_nonce' ); ?>
+            <table class="form-table">
+                <tr valign="top">
+                    <th scope="row"><label for="taxa_update_metadata_url">Plugin Update Metadata URL</label></th>
+                    <td>
+                        <input type="url" id="taxa_update_metadata_url" name="taxa_update_metadata_url" value="<?php echo esc_attr( $taxa_update_metadata_url ); ?>" class="regular-text" />
+                        <p class="description">URL to a JSON update manifest used for in-dashboard plugin updates.</p>
+                    </td>
+                </tr>
+                <tr valign="top">
+                    <th scope="row"><label for="taxa_update_github_token">GitHub Release Token</label></th>
+                    <td>
+                        <input type="password" id="taxa_update_github_token" name="taxa_update_github_token" value="<?php echo esc_attr( $taxa_update_github_token ); ?>" class="regular-text" autocomplete="off" />
+                        <p class="description">Personal access token used to authenticate GitHub release downloads (optional).</p>
+                    </td>
+                </tr>
+            </table>
+            <?php submit_button( 'Save Network Settings', 'primary', 'save_taxa_network_settings' ); ?>
+        </form>
+    </div>
+    <?php
+}
+
 function taxaRender() { ?>
     <div class="wrap">
         <h1>Taxonomy API Dashboard</h1>
@@ -83,8 +150,10 @@ function taxaSettingsPage() {
         update_option( 'site_focus_keyword', $site_focus_keyword );
         update_option( 'site_focus_keyword_slug', $site_focus_keyword_slug );
         update_option( 'primary_taxa_id', $primary_taxa_id );
-        update_option( 'taxa_update_metadata_url', $taxa_update_metadata_url );
-        update_option( 'taxa_update_github_token', $taxa_update_github_token );
+        if ( ! is_multisite() ) {
+            update_option( 'taxa_update_metadata_url', $taxa_update_metadata_url );
+            update_option( 'taxa_update_github_token', $taxa_update_github_token );
+        }
 
         // Cron / import options.
         $taxa_cron_frequency = isset( $_POST['taxa_cron_frequency'] ) ? sanitize_text_field( wp_unslash( $_POST['taxa_cron_frequency'] ) ) : 'manual';
@@ -220,20 +289,29 @@ function taxaSettingsPage() {
                             <p class="description">Root iNaturalist taxa ID (e.g. <code>1466321</code>). This will be the starting point for ingestion.</p>
                         </td>
                     </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="taxa_update_metadata_url">Plugin Update Metadata URL</label></th>
-                        <td>
-                            <input type="url" id="taxa_update_metadata_url" name="taxa_update_metadata_url" value="<?php echo esc_attr( $taxa_update_metadata_url ); ?>" class="regular-text" />
-                            <p class="description">URL to a JSON update manifest used for in-dashboard plugin updates.</p>
-                        </td>
-                    </tr>
-                    <tr valign="top">
-                        <th scope="row"><label for="taxa_update_github_token">GitHub Release Token</label></th>
-                        <td>
-                            <input type="password" id="taxa_update_github_token" name="taxa_update_github_token" value="<?php echo esc_attr( $taxa_update_github_token ); ?>" class="regular-text" autocomplete="off" />
-                            <p class="description">Personal access token used to authenticate GitHub release downloads (optional).</p>
-                        </td>
-                    </tr>
+                    <?php if ( ! is_multisite() ) : ?>
+                        <tr valign="top">
+                            <th scope="row"><label for="taxa_update_metadata_url">Plugin Update Metadata URL</label></th>
+                            <td>
+                                <input type="url" id="taxa_update_metadata_url" name="taxa_update_metadata_url" value="<?php echo esc_attr( $taxa_update_metadata_url ); ?>" class="regular-text" />
+                                <p class="description">URL to a JSON update manifest used for in-dashboard plugin updates.</p>
+                            </td>
+                        </tr>
+                        <tr valign="top">
+                            <th scope="row"><label for="taxa_update_github_token">GitHub Release Token</label></th>
+                            <td>
+                                <input type="password" id="taxa_update_github_token" name="taxa_update_github_token" value="<?php echo esc_attr( $taxa_update_github_token ); ?>" class="regular-text" autocomplete="off" />
+                                <p class="description">Personal access token used to authenticate GitHub release downloads (optional).</p>
+                            </td>
+                        </tr>
+                    <?php else : ?>
+                        <tr valign="top">
+                            <th scope="row">Plugin Update Settings</th>
+                            <td>
+                                <p class="description">These settings are managed in Network Admin &rarr; Settings &rarr; Taxonomy API Updates.</p>
+                            </td>
+                        </tr>
+                    <?php endif; ?>
                 </table>
             </div>
 
