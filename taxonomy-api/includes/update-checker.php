@@ -13,12 +13,14 @@ class Taxa_Plugin_Update_Checker {
     private $plugin_slug;
     private $cache_key;
     private $cache_ttl;
+    private $github_token;
 
-    public function __construct( $plugin_file, $metadata_url ) {
+    public function __construct( $plugin_file, $metadata_url, $github_token = '' ) {
         $this->plugin_file  = $plugin_file;
         $this->metadata_url = $metadata_url;
         $this->cache_key    = 'taxa_update_metadata_' . md5( $metadata_url );
         $this->cache_ttl    = 12 * HOUR_IN_SECONDS;
+        $this->github_token = $github_token;
 
         $plugin_basename = plugin_basename( $plugin_file );
         $this->plugin_slug = dirname( $plugin_basename );
@@ -27,6 +29,7 @@ class Taxa_Plugin_Update_Checker {
     public function register() {
         add_filter( 'pre_set_site_transient_update_plugins', array( $this, 'filter_update_plugins' ) );
         add_filter( 'plugins_api', array( $this, 'filter_plugins_api' ), 10, 3 );
+        add_filter( 'http_request_args', array( $this, 'filter_http_request_args' ), 10, 2 );
     }
 
     public function filter_update_plugins( $transient ) {
@@ -76,6 +79,36 @@ class Taxa_Plugin_Update_Checker {
             'tested'        => $metadata['tested'],
             'sections'      => $metadata['sections'],
         );
+    }
+
+    public function filter_http_request_args( $args, $url ) {
+        if ( ! $this->github_token ) {
+            return $args;
+        }
+
+        $host = wp_parse_url( $url, PHP_URL_HOST );
+        if ( ! $host ) {
+            return $args;
+        }
+
+        $is_github = false !== stripos( $host, 'github.com' ) || false !== stripos( $host, 'api.github.com' );
+        if ( ! $is_github ) {
+            return $args;
+        }
+
+        if ( empty( $args['headers'] ) || ! is_array( $args['headers'] ) ) {
+            $args['headers'] = array();
+        }
+
+        if ( empty( $args['headers']['Authorization'] ) ) {
+            $args['headers']['Authorization'] = 'token ' . $this->github_token;
+        }
+
+        if ( empty( $args['headers']['Accept'] ) ) {
+            $args['headers']['Accept'] = 'application/vnd.github+json';
+        }
+
+        return $args;
     }
 
     private function get_metadata() {

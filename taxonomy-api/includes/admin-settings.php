@@ -78,11 +78,13 @@ function taxaSettingsPage() {
         $site_focus_keyword_slug = isset( $_POST['site_focus_keyword_slug'] ) ? sanitize_text_field( wp_unslash( $_POST['site_focus_keyword_slug'] ) ) : '';
         $primary_taxa_id         = isset( $_POST['primary_taxa_id'] ) ? sanitize_text_field( wp_unslash( $_POST['primary_taxa_id'] ) ) : '';
         $taxa_update_metadata_url = isset( $_POST['taxa_update_metadata_url'] ) ? esc_url_raw( wp_unslash( $_POST['taxa_update_metadata_url'] ) ) : '';
+        $taxa_update_github_token = isset( $_POST['taxa_update_github_token'] ) ? sanitize_text_field( wp_unslash( $_POST['taxa_update_github_token'] ) ) : '';
 
         update_option( 'site_focus_keyword', $site_focus_keyword );
         update_option( 'site_focus_keyword_slug', $site_focus_keyword_slug );
         update_option( 'primary_taxa_id', $primary_taxa_id );
         update_option( 'taxa_update_metadata_url', $taxa_update_metadata_url );
+        update_option( 'taxa_update_github_token', $taxa_update_github_token );
 
         // Cron / import options.
         $taxa_cron_frequency = isset( $_POST['taxa_cron_frequency'] ) ? sanitize_text_field( wp_unslash( $_POST['taxa_cron_frequency'] ) ) : 'manual';
@@ -158,6 +160,7 @@ function taxaSettingsPage() {
     $site_focus_keyword_slug = get_option( 'site_focus_keyword_slug', '' );
     $primary_taxa_id         = get_option( 'primary_taxa_id', '' );
     $taxa_update_metadata_url = get_option( 'taxa_update_metadata_url', '' );
+    $taxa_update_github_token = get_option( 'taxa_update_github_token', '' );
 
     $taxa_cron_frequency = get_option( 'taxa_cron_frequency', 'manual' );
     $taxa_cron_batch_size = absint( get_option( 'taxa_cron_batch_size', 10 ) );
@@ -222,6 +225,13 @@ function taxaSettingsPage() {
                         <td>
                             <input type="url" id="taxa_update_metadata_url" name="taxa_update_metadata_url" value="<?php echo esc_attr( $taxa_update_metadata_url ); ?>" class="regular-text" />
                             <p class="description">URL to a JSON update manifest used for in-dashboard plugin updates.</p>
+                        </td>
+                    </tr>
+                    <tr valign="top">
+                        <th scope="row"><label for="taxa_update_github_token">GitHub Release Token</label></th>
+                        <td>
+                            <input type="password" id="taxa_update_github_token" name="taxa_update_github_token" value="<?php echo esc_attr( $taxa_update_github_token ); ?>" class="regular-text" autocomplete="off" />
+                            <p class="description">Personal access token used to authenticate GitHub release downloads (optional).</p>
                         </td>
                     </tr>
                 </table>
