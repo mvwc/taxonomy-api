@@ -4,7 +4,7 @@
     Plugin URI: https://www.aviandiscovery.com
     Description: Lightweight iNaturalist taxonomy ingestor with optional AI enrichment.
     Author: Brandon Bartlett
-    Version: 3.0.4
+    Version: 3.0.6
     Author URI: https://www.aviandiscovery.com
 */
 
