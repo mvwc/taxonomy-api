@@ -172,6 +172,20 @@ function taxa_facets_install_or_update_table() {
     // in the CREATE TABLE, so we don't need extra index cleanup here.
 }
 
+/**
+ * Ensure facets table exists/upgraded on load (covers updates where activation hook doesn't run).
+ */
+function taxa_facets_maybe_install_or_update_table() {
+    $target_version = '2.1.0';
+    $current = get_option( 'taxonomy_api_facets_db_version', '' );
+
+    if ( ! $current || version_compare( $current, $target_version, '<' ) ) {
+        taxa_facets_install_or_update_table();
+        update_option( 'taxonomy_api_facets_db_version', $target_version );
+    }
+}
+add_action( 'plugins_loaded', 'taxa_facets_maybe_install_or_update_table', 20 );
+
 
 function taxa_facets_ensure_last_viewed_column() {
     global $wpdb;

@@ -111,17 +111,15 @@ add_action( TAXA_FACETS_POPULARITY_CRON_HOOK, 'taxa_facets_rebuild_popularity_fr
 /**
  * Rebuild f.popularity from views_daily (rolling 30 days).
  *
- * Tables you referenced:
- * - otm_2_taxa_facets_views_daily
- * - otm_2_taxa_facets
+ * Tables:
+ * - {$wpdb->prefix}taxa_facets_views_daily
+ * - {$wpdb->prefix}taxa_facets
  */
 function taxa_facets_rebuild_popularity_from_daily_views() {
     global $wpdb;
 
-    // Your tables are explicitly named with otm_2_ prefix in your message.
-    // If you want this to be dynamic per blog prefix, replace with $wpdb->prefix.
-    $facets_table = 'otm_2_taxa_facets';
-    $daily_table  = 'otm_2_taxa_facets_views_daily';
+    $facets_table = $wpdb->prefix . 'taxa_facets';
+    $daily_table  = $wpdb->prefix . 'taxa_facets_views_daily';
 
     // Safety: only run if popularity exists.
     if ( function_exists( 'taxa_facets_column_exists' ) ) {
@@ -215,7 +213,14 @@ function taxa_fix_plugin_folder_name_on_update($source, $remote_source, $upgrade
     }
 
     // Rename the extracted folder to the stable folder.
-    $renamed = @rename($source, $new_source);
+    $renamed = false;
+    global $wp_filesystem;
+    if ($wp_filesystem && is_object($wp_filesystem)) {
+        $renamed = $wp_filesystem->move($source, $new_source, true);
+    }
+    if (!$renamed) {
+        $renamed = @rename($source, $new_source);
+    }
     if (!$renamed) {
         return new WP_Error(
             'taxa_update_rename_failed',
@@ -244,4 +249,3 @@ function taxa_rrmdir($dir) {
     }
     @rmdir($dir);
 }
-
