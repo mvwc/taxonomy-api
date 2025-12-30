@@ -4,7 +4,7 @@
     Plugin URI: https://www.aviandiscovery.com
     Description: Lightweight iNaturalist taxonomy ingestor with optional AI enrichment.
     Author: Brandon Bartlett
-    Version: 3.0.8
+    Version: 3.0.9
     Author URI: https://www.aviandiscovery.com
 */
 
@@ -181,6 +181,10 @@ function taxa_fix_plugin_folder_name_on_update($source, $remote_source, $upgrade
         return $source;
     }
 
+    if ( is_wp_error( $source ) ) {
+        return $source;
+    }
+
     // Ensure this is *our* plugin being updated.
     // Example: 'taxonomy-api/taxonomy-api.php'
     $our_plugin = 'taxonomy-api/taxonomy-api.php';
@@ -217,10 +221,10 @@ function taxa_fix_plugin_folder_name_on_update($source, $remote_source, $upgrade
     global $wp_filesystem;
     if ($wp_filesystem && is_object($wp_filesystem)) {
         $renamed = $wp_filesystem->move($source, $new_source, true);
-    }
-    if (!$renamed) {
+    } else {
         $renamed = @rename($source, $new_source);
     }
+
     if (!$renamed) {
         error_log(
             '[TAXA][UPDATE] Could not normalize plugin folder name. source=' . $source .
