@@ -222,10 +222,11 @@ function taxa_fix_plugin_folder_name_on_update($source, $remote_source, $upgrade
         $renamed = @rename($source, $new_source);
     }
     if (!$renamed) {
-        return new WP_Error(
-            'taxa_update_rename_failed',
-            'Taxonomy API update failed: could not normalize plugin folder name after extraction.'
+        error_log(
+            '[TAXA][UPDATE] Could not normalize plugin folder name. source=' . $source .
+            ' new_source=' . $new_source
         );
+        return $source;
     }
 
     return $new_source;
