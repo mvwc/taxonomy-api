@@ -38,7 +38,7 @@ $taxa_update_github_token = is_multisite()
     ? get_site_option( 'taxa_update_github_token', '' )
     : get_option( 'taxa_update_github_token', '' );
 if ( ! $taxa_update_metadata_url ) {
-    $taxa_update_metadata_url = 'https://www.aviandiscovery.com/wp-content/plugins/taxonomy-api/manifest.json';
+    $taxa_update_metadata_url = 'https://www.aviandiscovery.com/wp-content/plugins/manifest.json';
 }
 $taxa_update_metadata_url = apply_filters( 'taxa_api_update_metadata_url', $taxa_update_metadata_url );
 $taxa_update_github_token = apply_filters( 'taxa_api_update_github_token', $taxa_update_github_token );
