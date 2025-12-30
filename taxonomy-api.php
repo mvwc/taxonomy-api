@@ -162,3 +162,87 @@ function taxa_facets_rebuild_popularity_from_daily_views() {
         ' last_error=' . ( $wpdb->last_error ? $wpdb->last_error : '(none)' )
     );
 }
+
+<?php
+// In taxonomy-api.php (or a bootstrap include)
+
+add_filter('upgrader_source_selection', 'taxa_fix_plugin_folder_name_on_update', 10, 4);
+
+/**
+ * Force stable plugin folder name during updates when ZIP unpacks to repo-tag folder (e.g. plugin-3.0.0/).
+ *
+ * @param string      $source        Full path to the extracted package source folder.
+ * @param string      $remote_source Full path to the working directory.
+ * @param \WP_Upgrader $upgrader     Upgrader instance.
+ * @param array       $hook_extra    Extra args, including 'plugin' for plugin updates.
+ * @return string|\WP_Error
+ */
+function taxa_fix_plugin_folder_name_on_update($source, $remote_source, $upgrader, $hook_extra) {
+
+    // Only for plugin updates.
+    if (empty($hook_extra['plugin'])) {
+        return $source;
+    }
+
+    // Ensure this is *our* plugin being updated.
+    // Example: 'taxonomy-api/taxonomy-api.php'
+    $our_plugin = 'taxonomy-api/taxonomy-api.php';
+    if ($hook_extra['plugin'] !== $our_plugin) {
+        return $source;
+    }
+
+    $desired_folder = 'taxonomy-api';
+
+    // $source might be ".../ai-taxonomy-api-3.0.0/"
+    $source_basename = basename(trailingslashit($source));
+
+    // If it already matches, nothing to do.
+    if ($source_basename === $desired_folder) {
+        return $source;
+    }
+
+    $new_source = trailingslashit($remote_source) . $desired_folder;
+
+    // If a folder with the desired name already exists in the working dir, remove it first.
+    if (is_dir($new_source)) {
+        // WP_Filesystem is available during upgrades; use it if present.
+        global $wp_filesystem;
+        if ($wp_filesystem && is_object($wp_filesystem)) {
+            $wp_filesystem->delete($new_source, true);
+        } else {
+            // Fallback.
+            taxa_rrmdir($new_source);
+        }
+    }
+
+    // Rename the extracted folder to the stable folder.
+    $renamed = @rename($source, $new_source);
+    if (!$renamed) {
+        return new WP_Error(
+            'taxa_update_rename_failed',
+            'Taxonomy API update failed: could not normalize plugin folder name after extraction.'
+        );
+    }
+
+    return $new_source;
+}
+
+/**
+ * Fallback recursive dir delete if WP_Filesystem isn't available.
+ */
+function taxa_rrmdir($dir) {
+    if (!is_dir($dir)) return;
+    $items = scandir($dir);
+    if (!$items) return;
+    foreach ($items as $item) {
+        if ($item === '.' || $item === '..') continue;
+        $path = $dir . DIRECTORY_SEPARATOR . $item;
+        if (is_dir($path)) {
+            taxa_rrmdir($path);
+        } else {
+            @unlink($path);
+        }
+    }
+    @rmdir($dir);
+}
+
