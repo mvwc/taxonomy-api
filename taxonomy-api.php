@@ -163,7 +163,6 @@ function taxa_facets_rebuild_popularity_from_daily_views() {
     );
 }
 
-<?php
 // In taxonomy-api.php (or a bootstrap include)
 
 add_filter('upgrader_source_selection', 'taxa_fix_plugin_folder_name_on_update', 10, 4);
